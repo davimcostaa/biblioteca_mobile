@@ -94,7 +94,7 @@ export default function FormLogin({navigation}) {
                 <Text style={styles.textoTouchable}> Login </Text>
             </TouchableOpacity>
 
-            <Text style={styles.textoSenha}> Esqueçeu a password? </Text>
+            <Text style={styles.textoSenha}> Esqueceu a senha? </Text>
             </View>
           </>
         )}
