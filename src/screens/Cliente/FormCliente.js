@@ -11,17 +11,31 @@ import {
 import Api from '../../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TextInputMask } from 'react-native-masked-text';
+import { SelectList } from 'react-native-dropdown-select-list'
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
+import { format, parse } from 'date-fns';
 
 export default function FormCliente({ navigation, route }) {
 
   const [token, setToken] = useState();
+  const [assinaturas, setAssinaturas] = useState();
   const clienteParaCorrecao = route.params;
   console.log(clienteParaCorrecao)
 
-  useEffect(() => {
-    loadToken();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      loadToken();
+    }, [])
+  );
+  
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        carregarAssinaturas();
+      }
+    }, [token])
+  );
   async function loadToken() {
     try {
       const response = await AsyncStorage.getItem('token');
@@ -34,6 +48,21 @@ export default function FormCliente({ navigation, route }) {
       }
     } catch (error) {
       console.error('Error:', error);
+    }
+  }
+
+  async function carregarAssinaturas() {
+    try {
+      if (token) {
+        const response = await Api.get('/assinaturas', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setAssinaturas(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error ao carregar:', error);
     }
   }
 
@@ -65,14 +94,17 @@ export default function FormCliente({ navigation, route }) {
   });
 
   async function cadastrar(valores) {
-    console.log(valores);
+    const valoresParaAPI = {
+      ...valores,
+      dataNascimento: converterDataBrParaUs(valores.dataNascimento),
+    };
     try {
-      const response = await Api.post('/clientes', valores, {
+      const response = await Api.post('/clientes', valoresParaAPI, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
+      console.log(response)
       navigation.navigate('ListaClientes');
     } catch (error) {
       console.log(error);
@@ -80,6 +112,7 @@ export default function FormCliente({ navigation, route }) {
   }
 
   async function editar(id, valores) {
+    console.log(valores)
     try {
       const response = await Api.put('/clientes/' + id, valores, {
         headers: {
@@ -96,6 +129,13 @@ export default function FormCliente({ navigation, route }) {
     }
   }
 
+  function converterDataBrParaUs(dataBr) {
+    const dataObj = parse(dataBr, 'dd/MM/yyyy', new Date());
+    return format(dataObj, 'yyyy-MM-dd');
+  }
+
+  const dataTransformada = assinaturas?.map(assinatura => ({ key: assinatura.id.toString(), value: assinatura.tipo_assinatura }));
+
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Cadastro de clientes</Text>
@@ -105,9 +145,9 @@ export default function FormCliente({ navigation, route }) {
           codigo: clienteParaCorrecao?.codigo || '',
           nome: clienteParaCorrecao?.nome || '',
           email: clienteParaCorrecao?.email || '',
-          dataNascimento: clienteParaCorrecao?.dataNascimento || '',
+          dataNascimento: clienteParaCorrecao?.data_nascimento || '',
           telefone: clienteParaCorrecao?.telefone || '',
-          assinaturaId: clienteParaCorrecao?.assinaturaId || '',
+          assinaturaId: clienteParaCorrecao?.assinatura_id || '',
         }}
         validationSchema={validationSchema}
         onSubmit={values => clienteParaCorrecao ? editar(clienteParaCorrecao.id, values) : cadastrar(values)}
@@ -124,7 +164,6 @@ export default function FormCliente({ navigation, route }) {
                 onChangeText={handleChange('cpf')}
                 onBlur={handleBlur('cpf')}
                 error={touched.cpf && errors.cpf}
-
               />
 
               {(touched.cpf && errors.cpf) && <Text style={{ color: 'red' }}>{errors.cpf}</Text>}
@@ -173,6 +212,12 @@ export default function FormCliente({ navigation, route }) {
                 onChangeText={handleChange('dataNascimento')}
                 onBlur={handleBlur('dataNascimento')}
                 error={touched.dataNascimento && errors.dataNascimento}
+                render={props =>
+                  <TextInputMask
+                    {...props}
+                    type={'datetime'}
+                  />
+                }
               />
 
               {(touched.dataNascimento && errors.dataNascimento) && <Text style={{ color: 'red' }}>{errors.dataNascimento}</Text>}
@@ -195,19 +240,16 @@ export default function FormCliente({ navigation, route }) {
 
               {(touched.telefone && errors.telefone) && <Text style={{ color: 'red' }}>{errors.telefone}</Text>}
 
-              <TextInput
-                style={styles.input}
-                mode='outlined'
-                keyboardType='numeric'
-                label={'ID da Assinatura'}
-                value={values.assinaturaId}
-                onChangeText={handleChange('assinaturaId')}
-                onBlur={handleBlur('assinaturaId')}
-                error={touched.assinaturaId && errors.assinaturaId}
-              />
+              <SelectList 
+                setSelected={handleChange('assinaturaId')} 
+                data={dataTransformada} 
+                save="key"
+                boxStyles={styles.input}
+                defaultOption={clienteParaCorrecao?.assinatura_id}
+                searchPlaceholder='Selecione uma assinatura'
+                />
 
-              {(touched.assinaturaId && errors.assinaturaId) && <Text style={{ color: 'red' }}>{errors.assinaturaId}</Text>}
-
+                {(touched.assinaturaId && errors.assinaturaId) && <Text style={{ color: 'red' }}>{errors.assinaturaId}</Text>}
               <Button mode='contained' style={styles.botao} onPress={handleSubmit}>{clienteParaCorrecao ? 'Editar' : 'Cadastrar'}</Button>
 
             </ScrollView>
@@ -235,7 +277,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 60,
-    marginBottom: 40
+    marginTop: 40
   },
   titulo: {
     fontFamily: 'OpenSans_700Bold',

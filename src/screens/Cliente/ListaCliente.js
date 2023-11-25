@@ -92,15 +92,15 @@ export default function ListaClientes({ navigation }) {
       <ScrollView style={styles.listArea}>
         <View style={styles.rowContainer}>
           {clientes?.map((cliente) => (
-            <Card style={styles.card}>
+            <Card style={styles.card} key={cliente.id}>
             <Card.Content>
               <Text variant="titleLarge" style={styles.textoCard}>{cliente.nome}</Text>
               <Text variant="bodyMedium" style={styles.textoCard}>{cliente.email}</Text>
               <Text style={styles.textoCard}>{`Qtde de Empréstimos: ${cliente.emprestimos.length}`}</Text>
             </Card.Content>
             <Card.Actions>
-              <IconButton icon="delete-forever" iconColor='#fff' onPress={() => { excluirCliente(cliente.id) }} />
-              <IconButton icon="pencil-outline" iconColor='#fff' onPress={() => navigation.navigate('FormClientes', cliente)} />
+              <IconButton icon="delete-forever" iconColor='#fff' containerColor="#000" onPress={() => { excluirCliente(cliente.id) }} />
+              <IconButton icon="pencil-outline" iconColor='#fff' containerColor="#000" onPress={() => navigation.navigate('FormClientes', cliente)} />
             </Card.Actions>
           </Card>
           ))}

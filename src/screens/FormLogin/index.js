@@ -23,7 +23,7 @@ export default function FormLogin({navigation}) {
       return null;
   }
 
-    const validationSchema = Yup.object().shape({
+  const validationSchema = Yup.object().shape({
         email: Yup
           .string()
           .email('Email inválido')
@@ -78,6 +78,7 @@ export default function FormLogin({navigation}) {
                 mode='outlined'
                 label={'Senha'}
                 value={values.password}
+                secureTextEntry
                 onChangeText={handleChange('password')}
                 onBlur={handleBlur('password')}
                 error={touched.password && errors.password}

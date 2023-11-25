@@ -5,6 +5,7 @@ import StackLivros from '../screens/Livros/StackLivro';
 import StackAssinaturas from '../screens/Assinaturas/StackAssinaturas';
 import StackExemplares from '../screens/Exemplares/StackExemplares';
 import StackCliente from '../screens/Cliente/StackCliente';
+import StackEmprestimos from '../screens/Emprestimos/StackEmprestimos';
 
 const Tab = createBottomTabNavigator();
 
@@ -54,7 +55,15 @@ export default function MyTabs() {
         }
     }}
     />
-    <Tab.Screen name="Livros3" component={ListaLivros} />
+
+<Tab.Screen name="Empréstimos" component={StackEmprestimos}
+      options={{
+        tabBarLabel: 'Empréstimos',
+        tabBarIcon: ({ color, size }) => {
+            return <Ionicons name='share' color={color} size={size} />
+        }
+    }}
+    />
     </Tab.Navigator>
   );
 }

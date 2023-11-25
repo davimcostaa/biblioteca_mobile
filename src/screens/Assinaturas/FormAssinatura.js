@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     input: {
       width: '100%',
       height: 60,
-      marginBottom: 40
+      marginTop: 40
     },
     titulo: {
       fontFamily: 'OpenSans_700Bold',

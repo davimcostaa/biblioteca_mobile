@@ -3,24 +3,37 @@ import React, { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { Formik } from 'formik';
 import { Button, TextInput } from 'react-native-paper';
-import { TextInputMask } from 'react-native-masked-text';
 import {
   useFonts,
   OpenSans_400Regular,
   OpenSans_700Bold
 } from '@expo-google-fonts/open-sans';
 import Api from '../../services/api';
+import { SelectList } from 'react-native-dropdown-select-list'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 export default function FormExemplar({ navigation, route }) {
 
   const [token, setToken] = useState();
+  const [livros, setLivros] = useState([]);
   const exemplarParaCorrecao = route.params;
   console.log(exemplarParaCorrecao)
 
-  useEffect(() => {
-    loadToken();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadToken();
+    }, [])
+  );
+  
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        carregarLivros();
+      }
+    }, [token])
+  );
 
   async function loadToken() {
     try {
@@ -34,6 +47,21 @@ export default function FormExemplar({ navigation, route }) {
       }
     } catch (error) {
       console.error('Error:', error);
+    }
+  }
+
+  async function carregarLivros() {
+    try {
+      if (token) {
+        const response = await Api.get('/livros', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setLivros(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error ao carregar:', error);
     }
   }
 
@@ -63,7 +91,6 @@ export default function FormExemplar({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
       navigation.navigate('ListaExemplares');
     } catch (error) {
       console.log(error);
@@ -87,6 +114,8 @@ export default function FormExemplar({ navigation, route }) {
     }
   }
 
+  const dataTransformada = livros?.map(livro => ({ key: livro.id.toString(), value: livro.nome }));
+
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Cadastro de exemplares</Text>
@@ -102,15 +131,14 @@ export default function FormExemplar({ navigation, route }) {
         {({ handleChange, handleBlur, handleSubmit, touched, errors, values }) => (
           <>
             <ScrollView style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                mode='outlined'
-                label={'Livro'}
-                value={values.livroId}
-                onChangeText={handleChange('livroId')}
-                onBlur={handleBlur('livroId')}
-                error={touched.livroId && errors.livroId}
-              />
+
+            <SelectList 
+                setSelected={handleChange('livroId')} 
+                data={dataTransformada} 
+                save="key"
+                boxStyles={styles.inputSelect}
+                searchPlaceholder='Selecione um livro'
+            />
 
               {(touched.livroId && errors.livroId) && <Text style={{ color: 'red' }}>{errors.livroId}</Text>}
 
@@ -124,6 +152,7 @@ export default function FormExemplar({ navigation, route }) {
                 error={touched.localizacao && errors.localizacao}
               />
               {(touched.localizacao && errors.localizacao) && <Text style={{ color: 'red' }}>{errors.localizacao}</Text>}
+
 
               <Button mode='contained' style={styles.botao} onPress={handleSubmit}>{exemplarParaCorrecao ? 'Editar' : 'Cadastrar'}</Button>
 
@@ -152,7 +181,11 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 60,
-    marginBottom: 40
+    marginTop: 40
+  },
+  inputSelect: {
+    width: '100%',
+    height: 60,
   },
   titulo: {
     fontFamily: 'OpenSans_700Bold',
