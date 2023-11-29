@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, ScrollView } from 'react-native'
 import React from 'react'
 import livros from '../../../assets/livros.png'
 import logo from '../../../assets/logo.png'
@@ -18,11 +18,11 @@ const Login = ({navigation}) => {
     }
 
   return (
+        <ScrollView>
       <ImageBackground source={livros} style={styles.imagem}>
         <View style={styles.container}>
             <Image source={logo} style={styles.logo} />
             <Text style={styles.texto}>Gerencie sua livraria com facilidade!</Text>
-
             <TouchableOpacity 
                 style={styles.touchable}
                 onPress={() => navigation.navigate('FormLogin')}
@@ -30,7 +30,9 @@ const Login = ({navigation}) => {
                 <Text style={styles.textoTouchable}> Login </Text>
             </TouchableOpacity>
         </View> 
+
       </ImageBackground>
+        </ScrollView>
   )
 }
 

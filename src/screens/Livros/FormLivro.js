@@ -76,7 +76,7 @@ if (!fontsLoaded) {
         foto: Yup
           .string()
           .min(5, 'deve conter pelo menos 5 caracteres')
-          .max(500, 'deve conter no máximo 500 caracteres')
+          .max(500, 'deve conter no máximo 1000 caracteres')
           .required('Campo obrigatório'),
       });
 
