@@ -19,7 +19,6 @@ export default function FormExemplar({ navigation, route }) {
   const [token, setToken] = useState();
   const [livros, setLivros] = useState([]);
   const exemplarParaCorrecao = route.params;
-  console.log(exemplarParaCorrecao)
 
   useFocusEffect(
     useCallback(() => {
@@ -38,7 +37,6 @@ export default function FormExemplar({ navigation, route }) {
   async function loadToken() {
     try {
       const response = await AsyncStorage.getItem('token');
-      console.log(response);
       const tokenSemAspas = response.replace(/^"(.*)"$/, '$1');
       setToken(tokenSemAspas);
 
@@ -84,7 +82,6 @@ export default function FormExemplar({ navigation, route }) {
   });
 
   async function cadastrar(valores) {
-    console.log(valores);
     try {
       const response = await Api.post('/exemplares', valores, {
         headers: {

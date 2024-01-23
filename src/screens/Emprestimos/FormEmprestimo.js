@@ -16,7 +16,6 @@ export default function FormEmprestimo({ navigation, route }) {
   const [clientes, setClientes] = useState();
   const [exemplares, setExemplares] = useState();
   const emprestimoParaCorrecao = route.params;
-  console.log(emprestimoParaCorrecao);
 
   useFocusEffect(
     useCallback(() => {
@@ -36,7 +35,6 @@ export default function FormEmprestimo({ navigation, route }) {
   async function loadToken() {
     try {
       const response = await AsyncStorage.getItem('token');
-      console.log(response);
       const tokenSemAspas = response.replace(/^"(.*)"$/, '$1');
       setToken(tokenSemAspas);
 
@@ -96,7 +94,6 @@ export default function FormEmprestimo({ navigation, route }) {
       dataDevolucao: converterDataBrParaUs(valores.dataDevolucao),
     };
 
-    console.log(valoresParaAPI)
 
     try {
       const response = await Api.post('/emprestimos', valoresParaAPI, {
@@ -104,7 +101,6 @@ export default function FormEmprestimo({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
       navigation.navigate('ListaEmprestimos');
     } catch (error) {
       console.log(error);
@@ -112,7 +108,6 @@ export default function FormEmprestimo({ navigation, route }) {
   }
 
   async function editar(id, valores) {
-    console.log(valores);
     try {
       const response = await Api.put('/emprestimos/' + id, valores, {
         headers: {

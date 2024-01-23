@@ -26,7 +26,6 @@ export default function FormLivro({navigation, route}) {
   async function loadToken() {
     try {
       const response = await AsyncStorage.getItem('token');
-      console.log(response);
       const tokenSemAspas = response.replace(/^"(.*)"$/, '$1');
       setToken(tokenSemAspas);
 
@@ -81,14 +80,12 @@ if (!fontsLoaded) {
       });
 
       async function cadastrar(valores) {
-        console.log(valores);
         try {
           const response = await Api.post('/livros', valores, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          console.log(response);
           navigation.navigate('ListaLivros');
         } catch (error) {
           console.log(error);

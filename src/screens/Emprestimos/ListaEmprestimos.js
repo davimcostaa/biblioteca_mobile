@@ -91,8 +91,6 @@ export default function ListaEmprestimos({ navigation }) {
   }
 
   function salvarDevolucao() {
-    console.log('Data de Devolução:', dataDevolucao);
-    console.log('Avaliação:', rating);
 
     const dadosDevolucao = {
       id: emprestimoAtual.id,
@@ -185,7 +183,7 @@ export default function ListaEmprestimos({ navigation }) {
         </View>
 
         <View>
-        <Text style={styles.texto}>Empréstimos cadastrados</Text>
+        <Text style={styles.texto}>Devoluções cadastradas</Text>
 
           {devolvidos?.map((devolvido) => (
             <Card style={devolvido.atrasado == 'sim' ? styles.cardRed : styles.card} key={devolvido.id}>

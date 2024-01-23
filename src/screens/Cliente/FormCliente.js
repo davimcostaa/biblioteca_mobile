@@ -21,7 +21,6 @@ export default function FormCliente({ navigation, route }) {
   const [token, setToken] = useState();
   const [assinaturas, setAssinaturas] = useState();
   const clienteParaCorrecao = route.params;
-  console.log(clienteParaCorrecao)
 
   useFocusEffect(
     useCallback(() => {
@@ -39,7 +38,6 @@ export default function FormCliente({ navigation, route }) {
   async function loadToken() {
     try {
       const response = await AsyncStorage.getItem('token');
-      console.log(response);
       const tokenSemAspas = response.replace(/^"(.*)"$/, '$1');
       setToken(tokenSemAspas);
 
@@ -104,7 +102,6 @@ export default function FormCliente({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response)
       navigation.navigate('ListaClientes');
     } catch (error) {
       console.log(error);
@@ -112,7 +109,6 @@ export default function FormCliente({ navigation, route }) {
   }
 
   async function editar(id, valores) {
-    console.log(valores)
     try {
       const response = await Api.put('/clientes/' + id, valores, {
         headers: {

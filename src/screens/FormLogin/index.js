@@ -34,8 +34,7 @@ export default function FormLogin({navigation}) {
       });
 
   async function login(dados) {
-      const response = await Api.post('/login', dados);
-      console.log('Resposta da requisição:', response.data.token); 
+      const response = await Api.post('/login', dados)
       await AsyncStorage.setItem('token', JSON.stringify(response.data.token));
       navigation.navigate('Tabs')
   }

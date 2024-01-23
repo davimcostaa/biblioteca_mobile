@@ -17,7 +17,6 @@ export default function FormAssinatura({ navigation, route }) {
 
 const [token, setToken] = useState();
 const assinaturaParaCorrecao = route.params;
-console.log(assinaturaParaCorrecao)
 
 useEffect(() => {
   loadToken();
@@ -26,7 +25,6 @@ useEffect(() => {
 async function loadToken() {
   try {
     const response = await AsyncStorage.getItem('token');
-    console.log(response);
     const tokenSemAspas = response.replace(/^"(.*)"$/, '$1');
     setToken(tokenSemAspas);
 
@@ -60,14 +58,12 @@ const validationSchema = Yup.object().shape({
 });
 
 async function cadastrar(valores) {
-  console.log(valores);
   try {
     const response = await Api.post('/assinaturas', valores, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response);
     navigation.navigate('ListaAssinaturas');
   } catch (error) {
     console.log(error);
